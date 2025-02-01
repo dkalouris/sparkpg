@@ -1,0 +1,45 @@
+networks:
+  sparkpg_network:
+
+services:
+  spark-master:
+    image: my_first_spark
+    container_name: spark-master
+    networks:
+      - sparkpg_network
+    entrypoint: /bin/bash
+    command: -c "/opt/spark/sbin/start-master.sh; tail -f /dev/null"
+    ports:
+      - '8080:8080'
+      - '4040:4040'
+    volumes:
+      - spark-events:/opt/spark/events
+
+  spark-worker:
+    image: my_first_spark
+    container_name: spark-worker1
+    networks:
+      - sparkpg_network
+    entrypoint: /bin/bash
+    command: -c "/opt/spark/sbin/start-worker.sh  spark://spark-master:7077; tail -f /dev/null"
+    volumes:
+      - spark-events:/opt/spark/events  
+    
+  spark-history-server:
+    image: my_first_spark
+    container_name: spark-history-server
+    networks:
+      - sparkpg_network
+    entrypoint: /bin/bash
+    command: -c "/opt/spark/sbin/start-history-server.sh; tail -f /dev/null"
+    volumes:
+      - spark-events:/opt/spark/events 
+    ports:
+      - '18080:18080'
+
+volumes:
+  spark-events:
+
+    
+
+  
