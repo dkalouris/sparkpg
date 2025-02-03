@@ -17,8 +17,6 @@ ENV SPARK_MASTER_PORT="7077"
 ENV SPARK_MASTER_HOST="spark-master"
 COPY ./spark-defaults.conf "${SPARK_HOME}/conf"
 ENTRYPOINT ["/bin/bash"]
-# ENV SPARK_MASTER="spark://spark-master:7077"
-# ENV PYSPARK_PYTHON python3
 
 
 
