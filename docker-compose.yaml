@@ -14,6 +14,7 @@ services:
       - '8080:8080'
       - '4040:4040'
     volumes:
+      - .:/app
       - spark-events:/opt/spark/events
 
   spark-worker:
@@ -40,9 +41,31 @@ services:
     ports:
       - '18080:18080'
 
+  # Postgresql database instance
+  postgres:
+    image: postgres:13
+    restart: always
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - sparkpg_network
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+
+  # Website that can be used to connect, administrate and develop postgresql databases
+  pgadmin:
+    image: dpage/pgadmin4
+    networks:
+      - sparkpg_network
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@root.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8050:80"
+
 volumes:
   spark-events:
-
-    
-
-  

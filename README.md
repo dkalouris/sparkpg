@@ -1,9 +1,81 @@
-# Spark Playground
+# Spark + postgreSQL + Minio + Airflow  Tutorial
 
 ## Overview
 
-Welcome to the Spark Playground Project! This project aims to setup Apache Spark integration with other technologies using only docker-compose. These can help as first step for diving into Spark and exploring its capabilities or they can be used for other projects, as part of unit tests or deployed as is for local testing. 
+Welcome to Spark Data Stack Tutorial! This project aims to setup Apache Spark integration with other technologies using only docker-compose. These can help as first step for diving into Spark and exploring its capabilities or they can be used for other projects, as part of unit tests or deployed as is for local testing. 
 It will be developed in multiple phases, progressively adding new features and capabilities.
+
+## How to run
+
+### Using docker-compose
+To start all components run:
+
+```$docker compose up```
+
+and to stop them:
+
+```$docker compose down```
+
+For running a service individually e.g. spark-master:
+
+```$docker compose up spark-master```
+
+To connect to the attach the terminal of your container to yours and execute commands while the service is running e.g. for spark-master:
+
+```$docker exec -it spark-master /bin/bash```
+
+### Compiling code to jar:
+Any code files you add to sr/main/scala will be also added to spark master so you can connect while the instance is running 
+and compile them using sbt: 
+
+- Connect to spark-master using ```sh $docker exec -it spark-master /bin/bash```
+- Navigate to code directory: `cd /app`
+  - No external dependencies: run `sbt package` to create a jar including only the base classes.
+  - External dependencies: add them to `build.sbt` (postgresql is included) and run `sbt assembly` to make
+     a fat jar with the base classes and all the dependencies.
+
+### Submitting jar to Spark cluster:
+
+To submit fat jar created using sbt-assembly for postgresql use:
+```markdown 
+spark-submit \
+    --class SparkPostgresExample \
+    --master spark://spark-master:7077 \
+    --executor-memory 8G  \
+    --total-executor-cores 2 \
+    target/scala-2.12/sparkpg-assembly-1.0.jar
+```
+
+There are also examples located inside spark, that you use can use for testing the UI for example for scala:
+- Find code examples and the class names to reference in /opt/spark/examples/src/main/scala/org/apache/spark/examples
+- Submit them by using the jar /opt/spark/examples/jars/spark-examples_2.12-3.5.4.jar (exact jar path may vary based on spark installation)
+
+
+Example run localy with 1 executor:
+```markdown 
+spark-submit \
+    --class org.apache.spark.examples.AccumulatorMetricsTest \
+    --master local[1]  \
+    /opt/spark/examples/jars/spark-examples_2.12-3.5.4.jar
+```
+
+Example run on Spark standalone cluster in client deploy mode:
+```markdown 
+spark-submit \
+    --class org.apache.spark.examples.AccumulatorMetricsTest \
+    --master spark://spark-master:7077 \
+    --executor-memory 8G \
+    --total-executor-cores 2 \
+    /opt/spark/examples/jars/spark-examples_2.12-3.5.4.jar
+```
+
+
+### Useful links:
+
+- Spark master web UI url (contains info about spark master and connected executors): http://localhost:8080/
+- Spark spark Web UI url (up only during job runs): http://localhost:4040/
+- Spark history server url (contains completed job runs): http://localhost:18080/
+- pgadmin4 url (GUI for viewing postgresql): http://localhost:8050/
 
 ## Changelog
 
@@ -13,13 +85,21 @@ Set up Apache Spark as the foundation for the project.
 
 Configured the initial Spark environment for data processing and added the relevant Dockerfile and README files.
 
-For more navigate to [part 1](part-1-spark) and check out [README.md](part-1-spark/README.md).
+### Part 2: Integration with a relational databases (PostgreSQL)
 
+Renamed and moved code to root
+
+Updates:
+- Dockerfile: added postgresql jar and installation for sbt
+- docker-compose.yaml: added postgres and pgadmin services and added sparkpg repo as bind mount to spark-master
+- Added sbt assembly support by adding [build.sbt](build.sbt) and [plugins.sbt](project/plugins.sbt) files
+- Created [init file](init.sql) and [new class example]([src/main/scala/SparkPostgresExample) to test the database
 
 ## Next Steps
 
-### Part 2: Integration with a relational databases (PostgreSQL)
+### Part 3: Adding Object Storage (Minio)
 
-Setup the relevant docker-compose file, code examples to use PoststgresSQL + Spark.
+Setup the relevant docker-compose file, code examples to use Minio + Spark.
 
 Stay tuned for further updates!
+
