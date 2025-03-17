@@ -36,7 +36,9 @@ and compile them using sbt:
 
 ### Submitting jar to Spark cluster:
 
-To submit fat jar created using sbt-assembly for postgresql use:
+To submit fat jar created using sbt-assembly use:
+
+for postgres example:
 ```markdown 
 spark-submit \
     --class SparkPostgresExample \
@@ -45,7 +47,26 @@ spark-submit \
     --total-executor-cores 2 \
     target/scala-2.12/sparkpg-assembly-1.0.jar
 ```
+for S3 example:
 
+```markdown 
+spark-submit \
+    --class SparkS3Example \
+    --master spark://spark-master:7077 \
+    --executor-memory 8G  \
+    --total-executor-cores 2 \
+    target/scala-2.12/sparkpg-assembly-1.0.jar
+```
+for postgres + s3 example:
+
+```markdown 
+spark-submit \
+    --class SparkPostgresS3Example \
+    --master spark://spark-master:7077 \
+    --executor-memory 8G  \
+    --total-executor-cores 2 \
+    target/scala-2.12/sparkpg-assembly-1.0.jar
+```
 There are also examples located inside spark, that you use can use for testing the UI for example for scala:
 - Find code examples and the class names to reference in /opt/spark/examples/src/main/scala/org/apache/spark/examples
 - Submit them by using the jar /opt/spark/examples/jars/spark-examples_2.12-3.5.4.jar (exact jar path may vary based on spark installation)
@@ -95,11 +116,20 @@ Updates:
 - Added sbt assembly support by adding [build.sbt](build.sbt) and [plugins.sbt](project/plugins.sbt) files
 - Created [init file](init.sql) and [new class example]([src/main/scala/SparkPostgresExample) to test the database
 
-## Next Steps
-
 ### Part 3: Adding Object Storage (Minio)
 
-Setup the relevant docker-compose file, code examples to use Minio + Spark.
+Updates:
+- Dockerfile & build.sbt: added aws related jars 
+- docker-compose.yaml: added minio and  mc services
+- policy.json: new s3 policy example
+- init-minio.sh: bash commands needed to initialize new user and attach permissions using mc
+- spark-defaults.conf: updated with credentials and address for minio
+- Two new classes [S3]([src/main/scala/SparkS3Example) and [Postgres+S3]([src/main/scala/SparkPostgresS3Example) to test the new code
+
+## Next Steps
+
+### Part 4: Adding Scheduling (Airflow)
+
+Setup the relevant docker-compose file, code examples to use Airflow to schedule Spark scripts.
 
 Stay tuned for further updates!
-

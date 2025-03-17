@@ -6,7 +6,7 @@ import java.util.Properties
 
 object SparkPostgresExample {
   def main(args: Array[String]): Unit = {
-    val spark: SparkSession = SparkSession.builder()
+    val spark: SparkSession = SparkSession.builder
       // .master("local[*]")
       .appName("sparkpg")
       .getOrCreate()
