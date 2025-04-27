@@ -146,3 +146,13 @@ Updates:
 
 ## Next Steps
 That's all wrapped up for now! I hope you found this Docker Compose setup useful. If you have any suggestions for improvements, additional features, or enhancements, I would love to hear from you. Please feel free to open an issue or submit a pull request!
+
+## License
+
+This project is licensed under both the [Apache License 2.0](APACHE-LICENCE) and the [MIT License](LICENCE). You must comply with the terms of both licenses when using, modifying, or distributing this project.
+
+### Summary
+
+- **MIT License**: Allows you to do almost anything with the software, as long as you include the original copyright and license notice.
+
+- **Apache License 2.0**: Allows you to use, modify, and distribute the software, but requires you to include a copy of the license and provide attribution.
