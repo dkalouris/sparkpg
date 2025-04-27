@@ -1,9 +1,13 @@
 # Spark + postgreSQL + Minio + Airflow  Tutorial
 
+![Architecture Diagram: This diagram illustrates the system architecture of the project. It features PostgreSQL as the storage database, Apache Spark for data processing and execution, and MinIO for object storage. Apache Airflow is used for scheduling tasks. All services are orchestrated and run locally using Docker Compose, providing a seamless development environment.](images/architecture_diagram.png)
+
 ## Overview
 
 Welcome to Spark Data Stack Tutorial! This project aims to setup Apache Spark integration with other technologies using only docker-compose. These can help as first step for diving into Spark and exploring its capabilities or they can be used for other projects, as part of unit tests or deployed as is for local testing. 
-It will be developed in multiple phases, progressively adding new features and capabilities.
+It will be developed in multiple phases, progressively adding new features and capabilities. 
+
+If you`re interested in a step by step guide on how each service was added you can follow this [reading list](https://medium.com/@dkalouris/list/modern-spark-data-stack-using-dockercompose-81c0bff6e3ef) on Medium.
 
 ## How to run
 
@@ -25,14 +29,11 @@ To connect to the attach the terminal of your container to yours and execute com
 ```$docker exec -it spark-master /bin/bash```
 
 ### Compiling code to jar:
-Any code files you add to sr/main/scala will be also added to spark master so you can connect while the instance is running 
-and compile them using sbt: 
+Run docker `docker compose up jar-builder` (running all services can be resource intensive, it is good idea to run this ahead of starting the other services.)
 
-- Connect to spark-master using ```sh $docker exec -it spark-master /bin/bash```
-- Navigate to code directory: `cd /app`
-  - No external dependencies: run `sbt package` to create a jar including only the base classes.
-  - External dependencies: add them to `build.sbt` (postgresql is included) and run `sbt assembly` to make
-     a fat jar with the base classes and all the dependencies.
+By default jar-builder will run `sbt assembly` creating a fat jar with the base classes and all the dependencies mentioned in `build.sbt` (postgresql, minio).
+
+If you want to create a jar including only the base classes and no external dependencies change jar-builder to execute `sbt package` instead.
 
 ### Submitting jar to Spark cluster:
 
@@ -89,14 +90,21 @@ spark-submit \
     --total-executor-cores 2 \
     /opt/spark/examples/jars/spark-examples_2.12-3.5.5.jar
 ```
+Running jobs using Airflow:
+- Once services are up and running navigate to [airflow web url](http://localhost:8090/)
+- Click on "DAGS" and find dag named "spark"
+- Click on trigger button to start execution
+- You can view running jobs Spark master web UI url
 
+![Airflow web UI url layout for dag named "spark". Provides a clear overview of the DAG's structure and the status of its tasks at a glance. All tasks are empty, the DAG is not running and there are no scheduled tasks. On the top right there is a red rectacle indicator to indicate the position where the trigger button is located.](images/airflow_trigger.png)
 
 ### Useful links:
 
 - Spark master web UI url (contains info about spark master and connected executors): http://localhost:8080/
-- Spark spark Web UI url (up only during job runs): http://localhost:4040/
+- Spark spark web UI url (up only during job runs): http://localhost:4040/
 - Spark history server url (contains completed job runs): http://localhost:18080/
 - pgadmin4 url (GUI for viewing postgresql): http://localhost:8050/
+- airflow web UI url: http://localhost:8090/
 
 ## Changelog
 
@@ -126,10 +134,15 @@ Updates:
 - spark-defaults.conf: updated with credentials and address for minio
 - Two new classes [S3]([src/main/scala/SparkS3Example) and [Postgres+S3]([src/main/scala/SparkPostgresS3Example) to test the new code
 
-## Next Steps
-
 ### Part 4: Adding Scheduling (Airflow)
 
-Setup the relevant docker-compose file, code examples to use Airflow to schedule Spark scripts.
+Updates:
+- [Dockerfile.airflow](Dockerfile.airflow): added to extend base airflow image
+- docker-compose.yaml: added jar-builder service and airflow related services
+- [.env](.env): added with environment variables for airflow services
+- [APACHE-LICENCE](APACHE-LICENCE): added as part of using snippets as a base for airflow services in docker compose that were licensed under the same terms
+- Aiflow [example dag](/dags/spark.py) added
 
-Stay tuned for further updates!
+
+## Next Steps
+That's all wrapped up for now! I hope you found this Docker Compose setup useful. If you have any suggestions for improvements, additional features, or enhancements, I would love to hear from you. Please feel free to open an issue or submit a pull request!

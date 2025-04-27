@@ -5,3 +5,5 @@
 /.metals
 .bsp
 /target
+/logs/
+/dags/__pycache__
