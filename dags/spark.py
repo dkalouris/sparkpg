@@ -16,9 +16,20 @@ with DAG(
 
     accumulator_metrics = SparkSubmitOperator(
         task_id = "AccumulatorMetricsClient",
-        application = "/opt/spark/examples/jars/spark-examples_2.12-3.5.5.jar",
+        application = "/home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.6.jar",
         conn_id = "spark_standalone_client",
         java_class='org.apache.spark.examples.AccumulatorMetricsTest',
+        executor_cores=2,
+        total_executor_cores=2,
+        verbose=True
+    )
+
+    spark_parquet = SparkSubmitOperator(
+        task_id = "SparkParquetExampleClient",
+        application = "/app/target/scala-2.12/sparkpg-assembly-1.0.jar",
+        conn_id = "spark_standalone_client",
+        java_class='SparkParquetExample',
+        application_args=['file:///app/output/'],
         executor_cores=2,
         total_executor_cores=2,
         verbose=True

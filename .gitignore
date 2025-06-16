@@ -6,4 +6,5 @@
 .bsp
 /target
 /logs/
+/output/*
 /dags/__pycache__
