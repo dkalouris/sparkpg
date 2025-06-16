@@ -26,12 +26,12 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
     - .:/app
-    - spark-events:/opt/spark/events
+    - spark-events:/home/sparkuser/spark/events
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-  user: "${AIRFLOW_UID:-50000}:0"
+  user: "${AIRFLOW_UID:-50000}:1000"
   depends_on:
     &airflow-common-depends-on
     redis:
@@ -50,7 +50,8 @@ services:
     profiles:
       - build
     entrypoint: /bin/bash
-    command: -c "cd /app; sbt assembly; chown -R "${AIRFLOW_UID}:1000" target"
+    command: -c "cd /app; sbt assembly; chown -R "${AIRFLOW_UID}:1000" target; chmod -R g+w target"
+    user: "0:1000"
     volumes:
       - .:/app
   
@@ -61,13 +62,13 @@ services:
     networks:
       - sparkpg_network
     entrypoint: /bin/bash
-    command: -c "/opt/spark/sbin/start-master.sh; tail -f /dev/null"
+    command: -c "/home/sparkuser/spark/sbin/start-master.sh; tail -f /dev/null"
     ports:
       - '8080:8080'
       - '4040:4040'
     volumes:
       - .:/app
-      - spark-events:/opt/spark/events
+      - spark-events:/home/sparkuser/spark/events
 
   spark-worker:
     image: my_first_spark
@@ -76,10 +77,10 @@ services:
     networks:
       - sparkpg_network
     entrypoint: /bin/bash
-    command: -c "/opt/spark/sbin/start-worker.sh  spark://spark-master:7077; tail -f /dev/null"
+    command: -c "/home/sparkuser/spark/sbin/start-worker.sh  spark://spark-master:7077; tail -f /dev/null"
     volumes:
       - .:/app
-      - spark-events:/opt/spark/events  
+      - spark-events:/home/sparkuser/spark/events
     
   spark-history-server:
     image: my_first_spark
@@ -88,9 +89,9 @@ services:
     networks:
       - sparkpg_network
     entrypoint: /bin/bash
-    command: -c "/opt/spark/sbin/start-history-server.sh; tail -f /dev/null"
+    command: -c "/home/sparkuser/spark/sbin/start-history-server.sh; tail -f /dev/null"
     volumes:
-      - spark-events:/opt/spark/events 
+      - spark-events:/home/sparkuser/spark/events
     ports:
       - '18080:18080'
 
@@ -296,7 +297,8 @@ services:
           fi
           mkdir -p /sources/logs /sources/dags /sources/plugins
           chown -R "${AIRFLOW_UID}:1000" /sources/{logs,dags,plugins}
-          chown -R "${AIRFLOW_UID}:1000" /opt/spark/events
+          chown -R "${AIRFLOW_UID}:1000" /home/sparkuser/spark/events; chmod -R g+w /home/sparkuser/spark/events
+          chown -R "${AIRFLOW_UID}:1000" /app/output; chmod -R g+w /app/output
           exec /entrypoint airflow version
       environment:
         <<: *airflow-common-env
@@ -307,7 +309,8 @@ services:
         _PIP_ADDITIONAL_REQUIREMENTS: ''
       user: "0:0"
       volumes:
-        - spark-events:/opt/spark/events
+        - ./output:/app/output
+        - spark-events:/home/sparkuser/spark/events
         - ${AIRFLOW_PROJ_DIR:-.}:/sources
 
   airflow-cli:

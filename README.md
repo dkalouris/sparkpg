@@ -39,7 +39,18 @@ If you want to create a jar including only the base classes and no external depe
 
 To submit fat jar created using sbt-assembly use:
 
-for postgres example:
+for Parquet example:
+```markdown 
+spark-submit \
+    --class SparkParquetExample \
+    --master spark://spark-master:7077 \
+    --executor-memory 8G  \
+    --total-executor-cores 2 \
+    target/scala-2.12/sparkpg-assembly-1.0.jar \
+    output
+```
+
+for PostgreSQL example:
 ```markdown 
 spark-submit \
     --class SparkPostgresExample \
@@ -69,8 +80,8 @@ spark-submit \
     target/scala-2.12/sparkpg-assembly-1.0.jar
 ```
 There are also examples located inside spark, that you use can use for testing the UI for example for scala:
-- Find code examples and the class names to reference in /opt/spark/examples/src/main/scala/org/apache/spark/examples
-- Submit them by using the jar /opt/spark/examples/jars/spark-examples_2.12-3.5.5.jar (exact jar path may vary based on spark installation)
+- Find code examples and the class names to reference in /home/sparkuser/spark/examples/src/main/scala/org/apache/spark/examples
+- Submit them by using the jar /home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.5.jar (exact jar path may vary based on spark installation)
 
 
 Example run localy with 1 executor:
@@ -78,7 +89,7 @@ Example run localy with 1 executor:
 spark-submit \
     --class org.apache.spark.examples.AccumulatorMetricsTest \
     --master local[1]  \
-    /opt/spark/examples/jars/spark-examples_2.12-3.5.5.jar
+    /home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.5.jar
 ```
 
 Example run on Spark standalone cluster in client deploy mode:
@@ -88,7 +99,7 @@ spark-submit \
     --master spark://spark-master:7077 \
     --executor-memory 8G \
     --total-executor-cores 2 \
-    /opt/spark/examples/jars/spark-examples_2.12-3.5.5.jar
+/home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.5.jar
 ```
 Running jobs using Airflow:
 - Once services are up and running navigate to [airflow web url](http://localhost:8090/)
