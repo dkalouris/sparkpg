@@ -17,10 +17,15 @@ ENV SPARK_MASTER_PORT="7077"
 ENV SPARK_MASTER_HOST="spark-master"
 
 RUN mkdir -p ${SPARK_HOME}
-# If it breaks in this step go to https://dlcdn.apache.org/spark/ and choose higher spark version instead
-RUN curl https://dlcdn.apache.org/spark/spark-3.5.6/spark-3.5.6-bin-hadoop3.tgz -o spark-3.5.6-bin-hadoop3.tgz \
-    && tar xvzf spark-3.5.6-bin-hadoop3.tgz --directory ${SPARK_HOME} --strip-components 1 \
-    && rm -rf spark-3.5.6-bin-hadoop3.tgz
+
+# Fetch latest spark 3.5.x version and download the appropriate binary file
+RUN curl -s https://dlcdn.apache.org/spark/ | grep -oP 'spark-3\.5\.[0-9]+' | sort -V | tail -1 | \
+    xargs -I {} curl -O https://dlcdn.apache.org/spark/{}/{}-bin-hadoop3.tgz
+
+# Unpack the file and cleanup the binary file
+RUN tar xvzf spark-3.5.*-bin-hadoop*.tgz --directory ${SPARK_HOME} --strip-components 1 \
+    && rm -rf spark-3.5.*-bin-hadoop*.tgz
+
 
 RUN useradd -u 1000 -m -d /home/sparkuser sparkuser
 ENV HOME="/home/sparkuser"

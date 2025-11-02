@@ -81,7 +81,7 @@ spark-submit \
 ```
 There are also examples located inside spark, that you use can use for testing the UI for example for scala:
 - Find code examples and the class names to reference in /home/sparkuser/spark/examples/src/main/scala/org/apache/spark/examples
-- Submit them by using the jar /home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.5.jar (exact jar path may vary based on spark installation)
+- Submit them by using the jar /home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.X.jar (exact jar path may vary based on spark installation)
 
 
 Example run localy with 1 executor:
@@ -89,7 +89,7 @@ Example run localy with 1 executor:
 spark-submit \
     --class org.apache.spark.examples.AccumulatorMetricsTest \
     --master local[1]  \
-    /home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.5.jar
+    /home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.*.jar
 ```
 
 Example run on Spark standalone cluster in client deploy mode:
@@ -99,7 +99,7 @@ spark-submit \
     --master spark://spark-master:7077 \
     --executor-memory 8G \
     --total-executor-cores 2 \
-/home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.5.jar
+/home/sparkuser/spark/examples/jars/spark-examples_2.12-3.5.X.jar
 ```
 Running jobs using Airflow:
 - Once services are up and running navigate to [airflow web url](http://localhost:8090/)

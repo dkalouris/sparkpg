@@ -50,11 +50,37 @@ services:
     profiles:
       - build
     entrypoint: /bin/bash
-    command: -c "cd /app; sbt assembly; chown -R "${AIRFLOW_UID}:1000" target; chmod -R g+w target"
+    command: |
+      -c '
+        # 1. Check if release file exists and print it
+        echo "Checking RELEASE file..."
+        if [ -f /home/sparkuser/spark/RELEASE ]; then
+          echo "RELEASE file detected at /home/sparkuser/spark/RELEASE";
+          cat /home/sparkuser/spark/RELEASE | head -n 1;
+        else
+          echo "RELEASE file NOT found!";
+          exit 1;
+        fi
+
+        # 2. Change working directory to the bind mount one
+        cd /app;
+        
+        echo "starting compile!";
+
+        # 3. Build the jar dynamically with sbt using dynamic spark version extracted from RELEASE file and postgresql version extracted from jar filename
+        sbt -DsparkVersion=$(grep -oP "Spark 3\.5\.[0-9]+" /home/sparkuser/spark/RELEASE | grep -oP "3\.5\.[0-9]+") -DpostgresqlVersion=$(ls /home/sparkuser/spark/jars/ | grep -oP "postgresql-42\.7\.[0-9]+") -batch assembly;
+        echo "finished compling!";
+
+        # 4. Fix ownership
+        chown -R "${AIRFLOW_UID}:1000" target;
+
+        # 5. Fix permissions
+        chmod -R g+w target;
+      '
     user: "0:1000"
     volumes:
       - .:/app
-  
+
   spark-master:
     image: my_first_spark
     build: .
