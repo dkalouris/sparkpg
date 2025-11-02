@@ -13,7 +13,7 @@ WORKDIR ${SPARK_HOME}
 RUN curl -s https://dlcdn.apache.org/spark/ | grep -oP 'spark-3\.5\.[0-9]+' | sort -V | tail -1 | \
     xargs -I {} curl -O https://dlcdn.apache.org/spark/{}/{}-bin-hadoop3.tgz
 
- # Unpack the file and cleanup the binary file
+# Unpack the file and cleanup the binary file
 RUN tar xvzf spark-3.5.*-bin-hadoop*.tgz --directory ${SPARK_HOME} --strip-components 1 \
     && rm -rf spark-3.5.*-bin-hadoop*.tgz
 
