@@ -46,7 +46,7 @@ spark-submit \
     --master spark://spark-master:7077 \
     --executor-memory 8G  \
     --total-executor-cores 2 \
-    target/scala-2.12/sparkpg-assembly-1.0.jar \
+    /app/target/scala-2.12/sparkpg-assembly-1.0.jar \
     output
 ```
 
@@ -57,7 +57,7 @@ spark-submit \
     --master spark://spark-master:7077 \
     --executor-memory 8G  \
     --total-executor-cores 2 \
-    target/scala-2.12/sparkpg-assembly-1.0.jar
+    /app/target/scala-2.12/sparkpg-assembly-1.0.jar
 ```
 for S3 example:
 
@@ -67,7 +67,7 @@ spark-submit \
     --master spark://spark-master:7077 \
     --executor-memory 8G  \
     --total-executor-cores 2 \
-    target/scala-2.12/sparkpg-assembly-1.0.jar
+    /app/target/scala-2.12/sparkpg-assembly-1.0.jar
 ```
 for postgres + s3 example:
 
@@ -77,7 +77,7 @@ spark-submit \
     --master spark://spark-master:7077 \
     --executor-memory 8G  \
     --total-executor-cores 2 \
-    target/scala-2.12/sparkpg-assembly-1.0.jar
+    /app/target/scala-2.12/sparkpg-assembly-1.0.jar
 ```
 There are also examples located inside spark, that you use can use for testing the UI for example for scala:
 - Find code examples and the class names to reference in /home/sparkuser/spark/examples/src/main/scala/org/apache/spark/examples
